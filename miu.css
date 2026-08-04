@@ -26,21 +26,21 @@ a { color: inherit; text-decoration: none; }
 .progress span { display: block; height: 100%; background: linear-gradient(90deg,#8cb691,#315c2a); transform: scaleX(0); transform-origin: left; }
 
 .opening { --open-green: #315c21; position: fixed; inset: 0; z-index: 1000; display: block; overflow: hidden; color: #fff; }
-.opening__panel { position: absolute; top: 0; bottom: 0; width: 50%; background: var(--open-green); transition: transform 1.25s cubic-bezier(.77,0,.18,1); }
-.opening__panel--left { left: 0; }
-.opening__panel--right { right: 0; }
+.opening__panel { position: absolute; top: 0; bottom: 0; background: var(--open-green); transition: transform 1.25s cubic-bezier(.77,0,.18,1); }
+.opening__panel--left { left: 0; width: 70%; }
+.opening__panel--right { right: 0; width: 30%; }
 .opening__panel--left::before, .opening__panel--right::before { position: absolute; inset: 0; content: ""; opacity: .12; background: radial-gradient(circle at 20% 10%, white 0 1px, transparent 1.5px); background-size: 13px 13px; }
-.opening__ribbon { position: absolute; top: 0; bottom: 0; left: 50%; width: 14px; background: #efefeb; box-shadow: 0 0 10px rgba(0,0,0,.12); transform: translateX(-50%); transition: opacity .5s ease; }
-.opening__intro { position: absolute; top: 7vh; left: max(10px,calc(50vw - 287px)); width: min(255px,calc(50vw - 20px)); text-align: center; }
+.opening__ribbon { position: absolute; top: 0; bottom: 0; left: 70%; width: 14px; background: #efefeb; box-shadow: 0 0 10px rgba(0,0,0,.12); transform: translateX(-50%); transition: opacity .5s ease; }
+.opening__intro { position: absolute; top: 7vh; left: 0; width: 100%; text-align: center; }
 .opening__intro p { margin: 0 0 42px; font: 400 clamp(30px,8.2vw,55px)/.9 var(--script); white-space: nowrap; }
 .opening__intro h1 { margin: 0; font: 400 clamp(30px,7vw,55px)/.82 var(--script); }
 .opening__intro h1 i { display: inline-block; font-weight: 400; }
-.opening__guest { position: absolute; bottom: 8vh; left: max(14px,calc(50vw - 287px)); display: flex; flex-direction: column; gap: 8px; font-size: clamp(17px,3.8vw,23px); }
+.opening__guest { position: absolute; right: 0; bottom: 8vh; left: 0; display: flex; align-items: center; flex-direction: column; gap: 8px; text-align: center; font-size: clamp(17px,3.8vw,23px); }
 .opening__guest strong { font-weight: 400; font-style: italic; }
-.opening__seal { position: absolute; top: 50%; left: 50%; z-index: 3; width: 78px; height: 78px; padding: 0; border: 0; border-radius: 50%; background: #b59157; box-shadow: inset 0 0 0 3px #d8b77b, inset 0 0 15px #78552e, 0 6px 18px rgba(0,0,0,.28); transform: translate(-50%,-50%); cursor: pointer; transition: transform .45s ease, opacity .35s ease; }
+.opening__seal { position: absolute; top: 50%; left: 70%; z-index: 3; width: 78px; height: 78px; padding: 0; border: 0; border-radius: 50%; background: #b59157; box-shadow: inset 0 0 0 3px #d8b77b, inset 0 0 15px #78552e, 0 6px 18px rgba(0,0,0,.28); transform: translate(-50%,-50%); cursor: pointer; transition: transform .45s ease, opacity .35s ease; }
 .opening__seal:hover { transform: translate(-50%,-50%) scale(1.08) rotate(4deg); }
 .opening__seal svg { width: 100%; fill: none; stroke: #4c351d; stroke-width: 2; }
-.opening__cta { position: absolute; top: calc(50% + 82px); left: max(25%,calc(50% - 143.5px)); z-index: 3; padding: 10px 22px; border: 1px solid rgba(255,255,255,.3); border-radius: 50px; color: #fff; background: rgba(255,255,255,.1); font: 500 13px/1 var(--serif); letter-spacing: .08em; white-space: nowrap; text-transform: uppercase; transform: translateX(-50%); cursor: pointer; backdrop-filter: blur(6px); transition: opacity .3s ease, background .3s ease; }
+.opening__cta { position: absolute; top: calc(50% + 82px); left: 35%; z-index: 3; padding: 10px 22px; border: 1px solid rgba(255,255,255,.3); border-radius: 50px; color: #fff; background: rgba(255,255,255,.1); font: 500 13px/1 var(--serif); letter-spacing: .08em; white-space: nowrap; text-transform: uppercase; transform: translateX(-50%); cursor: pointer; backdrop-filter: blur(6px); transition: opacity .3s ease, background .3s ease; }
 .opening__cta:hover { background: rgba(255,255,255,.2); }
 .opening.is-open .opening__panel--left { transform: translateX(-101%); }
 .opening.is-open .opening__panel--right { transform: translateX(101%); }
