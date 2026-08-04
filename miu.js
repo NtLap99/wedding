@@ -29,6 +29,7 @@ function setupOpening() {
     opening.classList.add('is-open');
     document.body.classList.remove('is-locked');
     music.play().catch(() => {});
+    document.dispatchEvent(new CustomEvent('miu:opened'));
     window.setTimeout(() => opening.classList.add('is-hidden'), 1350);
   };
   $('#open-invitation').addEventListener('click', open);
@@ -71,9 +72,77 @@ function setupScroll() {
     if (!ticking) requestAnimationFrame(update);
     ticking = true;
   }, { passive: true });
-  topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-  $('#jump-rsvp').addEventListener('click', () => $('.rsvp-section').scrollIntoView({ behavior: 'smooth' }));
+  topButton.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
   update();
+}
+
+function setupAutoScroll() {
+  const button = $('#auto-scroll');
+  let active = false;
+  let scrollTimer = 0;
+  let startTimer = 0;
+  let previousScrollBehavior = '';
+
+  const render = () => {
+    button.setAttribute('aria-pressed', String(active));
+    button.setAttribute('aria-label', active ? 'Tắt tự động cuộn' : 'Bật tự động cuộn');
+  };
+
+  const stop = () => {
+    active = false;
+    window.clearInterval(scrollTimer);
+    window.clearTimeout(startTimer);
+    document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    render();
+  };
+
+  const step = () => {
+    if (!active) return;
+    window.scrollBy(0, 1);
+    const reachedBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 3;
+    if (reachedBottom) {
+      stop();
+      return;
+    }
+  };
+
+  const start = () => {
+    if (active) return;
+    active = true;
+    previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    render();
+    showToast('Đã bật tự động cuộn · chạm màn hình để dừng');
+    scrollTimer = window.setInterval(step, 20);
+  };
+
+  const scheduleStart = (delay = 1500) => {
+    if (query.get('autoscroll') === 'false') return;
+    window.clearTimeout(startTimer);
+    startTimer = window.setTimeout(start, delay);
+  };
+
+  button.addEventListener('click', () => active ? stop() : start());
+  window.addEventListener('wheel', stop, { passive: true });
+  window.addEventListener('touchstart', (event) => {
+    if (!event.target.closest('#auto-scroll')) stop();
+  }, { passive: true });
+  window.addEventListener('keydown', (event) => {
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) stop();
+  });
+  document.addEventListener('miu:pause-auto-scroll', stop);
+  document.addEventListener('miu:opened', () => scheduleStart());
+  $$('#open-invitation, #open-invitation-text').forEach((openButton) => {
+    openButton.addEventListener('click', () => scheduleStart());
+  });
+  if (query.get('preview') === '1' && query.get('autoscroll') !== 'false') {
+    if (document.readyState === 'complete') scheduleStart(800);
+    else window.addEventListener('load', () => scheduleStart(800), { once: true });
+  }
+  render();
 }
 
 function setupMusic() {
@@ -135,6 +204,16 @@ function showToast(message) {
 
 function setupRsvp() {
   const form = $('#miu-rsvp-form');
+  const modal = $('.miu-rsvp-modal');
+  $$('[data-open-miu-rsvp]').forEach((button) => button.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
+    modal.showModal();
+  }));
+  $('[data-close-miu-rsvp]').addEventListener('click', () => modal.close());
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) modal.close();
+  });
+  if (query.get('modal') === 'rsvp') window.addEventListener('load', () => modal.showModal(), { once: true });
   const saved = window.localStorage.getItem('miu-wedding-rsvp');
   if (saved) {
     try {
@@ -150,7 +229,21 @@ function setupRsvp() {
     const values = Object.fromEntries(new FormData(form).entries());
     window.localStorage.setItem('miu-wedding-rsvp', JSON.stringify(values));
     showToast(`Cảm ơn ${values.name}! Phản hồi của bạn đã được lưu.`);
+    modal.close();
   });
+}
+
+function setupGiftModal() {
+  const modal = $('.miu-gift-modal');
+  $$('[data-open-miu-gift]').forEach((button) => button.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
+    modal.showModal();
+  }));
+  $('[data-close-miu-gift]').addEventListener('click', () => modal.close());
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) modal.close();
+  });
+  if (query.get('modal') === 'gift') window.addEventListener('load', () => modal.showModal(), { once: true });
 }
 
 function setupGallery() {
@@ -171,6 +264,8 @@ setupOpening();
 setupReveal();
 setupScroll();
 setupMusic();
+setupAutoScroll();
 setupCountdown();
 setupRsvp();
+setupGiftModal();
 setupGallery();

@@ -52,7 +52,7 @@
         <svg class="botanical botanical--right" viewBox="0 0 150 300" aria-hidden="true"><path d="M18 298C72 224 39 128 125 15M49 242c-30-3-42-21-42-48 29-2 48 17 46 41M62 203c26-13 42-36 38-63-29 7-44 30-38 63M76 154c-25-9-34-29-29-51 25 3 38 25 29 51M91 110c25-9 37-28 35-49-25 3-40 24-35 49"/></svg>
         <div class="families reveal">
           <div><b>Nhà trai</b><span>Ông bà thân sinh của chú rể</span></div>
-          <div class="families__mark"><i>L</i><em>&amp;</em><i>S</i></div>
+          <div class="families__mark" role="img" aria-label="L và S"><i>L</i><i>S</i></div>
           <div><b>Nhà gái</b><span>Ông bà thân sinh của cô dâu</span></div>
         </div>
         <div class="invite__copy reveal">
@@ -135,16 +135,13 @@
       <section class="rsvp-section">
         <img src="assets/images/veil.jpg" alt="Cô dâu chú rể" loading="lazy" />
         <div class="rsvp-section__shade"></div>
-        <form class="rsvp-card reveal" id="miu-rsvp-form">
+        <div class="rsvp-card rsvp-card--intro reveal">
           <p>R.S.V.P</p>
           <h2>Xác nhận tham dự</h2>
           <span>Hãy xác nhận sự có mặt của bạn trước ngày 15.10.2026</span>
-          <label><input name="name" type="text" required placeholder="Tên của bạn" data-guest-input /></label>
-          <label><select name="attendance" required><option value="">Bạn sẽ tham dự chứ?</option><option value="yes">Mình sẽ tham dự</option><option value="no">Rất tiếc, mình không thể</option></select></label>
-          <label><select name="guests"><option value="1">1 người tham dự</option><option value="2">2 người tham dự</option><option value="3">3 người tham dự</option><option value="4">4 người tham dự</option></select></label>
-          <label><textarea name="message" rows="3" placeholder="Gửi lời chúc tới dâu rể..."></textarea></label>
-          <button type="submit">Gửi xác nhận</button>
-        </form>
+          <button type="button" data-open-miu-rsvp>Xác nhận tham dự</button>
+          <button class="rsvp-card__gift" type="button" data-open-miu-gift>Gửi mừng cưới</button>
+        </div>
       </section>
 
       <section class="countdown paper-section">
@@ -162,9 +159,33 @@
 
     <nav class="floating-actions" aria-label="Công cụ nhanh">
       <button type="button" id="music-toggle" aria-label="Tắt nhạc" aria-pressed="true"><svg class="icon-on" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg><svg class="icon-off" viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9H5Z"/><path d="m4 4 16 16"/></svg></button>
-      <button type="button" id="jump-rsvp" aria-label="Xác nhận tham dự"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 7l8 6 8-6"/></svg></button>
+      <button type="button" id="auto-scroll" aria-label="Bật tự động cuộn" aria-pressed="false"><svg class="auto-scroll__play" viewBox="0 0 24 24"><path d="m9 7 7 5-7 5z"/></svg><svg class="auto-scroll__pause" viewBox="0 0 24 24"><path d="M9 7v10M15 7v10"/></svg></button>
+      <button type="button" data-open-miu-rsvp aria-label="Xác nhận tham dự"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 7l8 6 8-6"/></svg></button>
+      <button type="button" data-open-miu-gift aria-label="Gửi mừng cưới"><svg viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7c-1-4-6-4-6-1 0 2 3 2 6 1ZM12 7c1-4 6-4 6-1 0 2-3 2-6 1Z"/></svg></button>
       <button type="button" id="back-top" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></svg></button>
     </nav>
+
+    <dialog class="miu-modal miu-rsvp-modal">
+      <button class="miu-modal__close" type="button" data-close-miu-rsvp aria-label="Đóng">×</button>
+      <p class="miu-modal__script">R.S.V.P</p>
+      <h2>Xác nhận tham dự</h2>
+      <p>Vui lòng phản hồi trước ngày 15.10.2026.</p>
+      <form id="miu-rsvp-form">
+        <label><span>Tên của bạn</span><input name="name" type="text" required placeholder="Nhập tên của bạn" data-guest-input /></label>
+        <label><span>Bạn có thể tham dự?</span><select name="attendance" required><option value="">Chọn câu trả lời</option><option value="yes">Mình sẽ tham dự</option><option value="no">Rất tiếc, mình không thể</option></select></label>
+        <label><span>Số người tham dự</span><select name="guests"><option value="1">1 người</option><option value="2">2 người</option><option value="3">3 người</option><option value="4">4 người</option></select></label>
+        <label><span>Lời nhắn</span><textarea name="message" rows="3" placeholder="Gửi lời chúc tới dâu rể..."></textarea></label>
+        <button type="submit">Gửi xác nhận</button>
+      </form>
+    </dialog>
+
+    <dialog class="miu-modal miu-gift-modal">
+      <button class="miu-modal__close" type="button" data-close-miu-gift aria-label="Đóng">×</button>
+      <p class="miu-modal__script">Wedding Gift</p>
+      <h2>Gửi mừng cưới</h2>
+      <div class="miu-gift-mark" role="img" aria-label="L và S"><i>L</i><i>S</i></div>
+      <p>Sự hiện diện và lời chúc của bạn đã là món quà quý giá nhất. Thông tin mừng cưới sẽ được dâu rể cập nhật tại đây.</p>
+    </dialog>
 
     <dialog class="photo-viewer" aria-label="Xem ảnh cưới">
       <button type="button" data-close-photo aria-label="Đóng">×</button>
