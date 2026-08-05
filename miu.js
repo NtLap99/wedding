@@ -407,21 +407,18 @@ function setupRsvp() {
     if (event.target === modal) modal.close();
   });
   if (query.get('modal') === 'rsvp') window.addEventListener('load', () => modal.showModal(), { once: true });
-  const saved = window.localStorage.getItem('miu-wedding-rsvp');
-  if (saved) {
-    try {
-      const values = JSON.parse(saved);
-      Object.entries(values).forEach(([key, value]) => {
-        if (form.elements[key]) form.elements[key].value = value;
-      });
-    } catch (_) { /* Ignore invalid local data. */ }
-  }
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;
     const values = Object.fromEntries(new FormData(form).entries());
-    window.localStorage.setItem('miu-wedding-rsvp', JSON.stringify(values));
-    showToast(`Cảm ơn ${values.name}! Phản hồi của bạn đã được lưu.`);
+    
+    // Save to Firebase Firestore
+    if (typeof WeddingDB !== 'undefined') {
+      WeddingDB.saveRsvp(values);
+    }
+
+    showToast(`Cảm ơn ${values.name}! Phản hồi của bạn đã được gửi thành công.`);
     if (window.triggerConfetti) {
       window.triggerConfetti(window.innerWidth / 2, window.innerHeight / 3);
     }
@@ -468,18 +465,11 @@ function setupWishes() {
     { name: "Minh Tuấn (Bạn chú rể)", message: "Mừng ngày chung đôi! Chúc vợ chồng bạn tôi luôn ngập tràn tiếng cười và hạnh phúc.", date: "1 giờ trước" },
   ];
 
-  const getWishes = () => {
-    const local = window.localStorage.getItem('miu-wedding-wishes');
-    if (!local) return defaultWishes;
-    try {
-      return JSON.parse(local);
-    } catch (_) {
-      return defaultWishes;
-    }
-  };
+  let currentWishes = defaultWishes;
 
-  const renderWishes = () => {
-    const list = getWishes();
+  const renderWishes = (wishesList) => {
+    const list = wishesList && wishesList.length ? wishesList : currentWishes;
+    currentWishes = list;
     wall.innerHTML = list.map((w) => `
       <article class="wish-card">
         <div class="wish-card__header">
@@ -491,6 +481,15 @@ function setupWishes() {
     `).join('');
   };
 
+  renderWishes();
+
+  // Listen for real-time Firebase Firestore updates
+  if (typeof WeddingDB !== 'undefined') {
+    WeddingDB.onWishesUpdate((remoteWishes) => {
+      renderWishes(remoteWishes);
+    });
+  }
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data = new FormData(form);
@@ -498,11 +497,10 @@ function setupWishes() {
     const message = (data.get('message') || '').trim();
     if (!name || !message) return;
 
-    const list = getWishes();
-    list.unshift({ name, message, date: 'Vừa xong' });
-    window.localStorage.setItem('miu-wedding-wishes', JSON.stringify(list));
+    if (typeof WeddingDB !== 'undefined') {
+      WeddingDB.addWish(name, message);
+    }
 
-    renderWishes();
     form.reset();
     showToast('Cảm ơn lời chúc mừng ý nghĩa của bạn!');
     if (window.triggerConfetti) {
@@ -510,8 +508,6 @@ function setupWishes() {
       window.triggerConfetti(rect.left + rect.width / 2, rect.top);
     }
   });
-
-  renderWishes();
 }
 
 function setupTouchSparkles() {

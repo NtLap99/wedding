@@ -266,22 +266,15 @@ function showToast(message) {
 
 function setupRsvp() {
   const form = $('.rsvp-form');
-  const saved = window.localStorage.getItem('wedding-rsvp');
-  if (saved) {
-    try {
-      const values = JSON.parse(saved);
-      Object.entries(values).forEach(([key, value]) => {
-        if (form.elements[key]) form.elements[key].value = value;
-      });
-    } catch (_) { /* Ignore invalid saved values. */ }
-  }
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;
     const values = Object.fromEntries(new FormData(form).entries());
-    window.localStorage.setItem('wedding-rsvp', JSON.stringify(values));
-    showToast(`Cảm ơn ${values.name}! Phản hồi của bạn đã được lưu trên thiết bị này.`);
+    if (typeof WeddingDB !== 'undefined') {
+      WeddingDB.saveRsvp(values);
+    }
+    showToast(`Cảm ơn ${values.name}! Phản hồi của bạn đã được gửi thành công.`);
   });
 }
 
