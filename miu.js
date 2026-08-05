@@ -217,7 +217,7 @@ function setupAutoScroll() {
   let animFrameId = 0;
   let startTimer = 0;
   let lastTime = 0;
-  let accumulatedScroll = 0;
+  let accumulatedScroll = 0
   let programmaticScroll = false;
   let userTouching = false;
   const customSpeed = Number(query.get('speed') || query.get('autoscrollspeed'));
