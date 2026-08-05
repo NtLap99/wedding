@@ -46,7 +46,7 @@ button, input, select, textarea { font: inherit; }
 button { color: inherit; }
 a { color: inherit; text-decoration: none; }
 
-.miu-page { width: min(575px, 100%); margin: 0 auto; overflow: hidden; background: var(--paper); box-shadow: 0 0 32px rgba(31,66,31,.16); }
+.miu-page { width: min(575px, 100%); margin: 0 auto; overflow-x: hidden; background: var(--paper); box-shadow: 0 0 32px rgba(31,66,31,.16); }
 .paper-section { position: relative; background-color: var(--paper); background-image: radial-gradient(rgba(49,92,42,.055) .65px, transparent .65px); background-size: 5px 5px; }
 .progress { position: fixed; top: 0; left: 50%; z-index: 200; width: min(575px,100%); height: 3px; transform: translateX(-50%); pointer-events: none; }
 .progress span { display: block; height: 100%; background: linear-gradient(90deg,#8cb691,#315c2a); transform: scaleX(0); transform-origin: left; }
@@ -199,7 +199,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Story / Profiles ─────────────────────────────── */
 .story { padding: 70px 30px; }
-.story blockquote { max-width: 460px; margin: 0 auto 58px; font: 400 var(--text-3xl)/1.35 var(--script); text-align: center; }
+.story blockquote { max-width: 460px; margin: 0 auto 40px; font: 400 clamp(22px, 4.8vw, 32px)/1.4 var(--script); text-align: center; }
 .story__portrait { position: relative; width: 78%; height: 640px; margin: 0 auto; }
 .story__portrait::before { position: absolute; top: -17px; left: -17px; width: 55%; height: 45%; content: ""; border-top: 1px solid var(--leaf); border-left: 1px solid var(--leaf); }
 .story__portrait img { position: relative; z-index: 1; height: 100%; object-fit: cover; object-position: center; }

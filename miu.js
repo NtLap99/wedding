@@ -17,15 +17,32 @@ function escapeHtml(str) {
 }
 
 function guestName() {
-  const guest = query.get("guest");
-  return guest && guest.trim() ? guest.trim().slice(0, 80) : "Quý khách";
+  const params = new URLSearchParams(window.location.search);
+  let guest = params.get("name") || params.get("guest") || params.get("to") || params.get("g") || params.get("n") || params.get("khach");
+
+  if (!guest || !guest.trim()) return "Quý khách";
+
+  guest = guest.trim();
+
+  const nt = params.get("nt") || params.get("with") || params.get("plus");
+  if (nt) {
+    const ntLabel = (nt === "1" || nt === "true") ? "NT" : nt.trim();
+    if (!guest.toLowerCase().includes("nt") && !guest.toLowerCase().includes(ntLabel.toLowerCase())) {
+      guest += ` + ${ntLabel}`;
+    }
+  }
+
+  guest = guest.replace(/\s*\+\s*/g, " + ").replace(/\s*&\s*/g, " & ").replace(/\s+/g, " ");
+
+  return guest.slice(0, 80);
 }
 
 function hydrateGuest() {
   const guest = guestName();
   $$('[data-guest]').forEach((node) => { node.textContent = guest; });
-  const input = $('[data-guest-input]');
-  if (guest !== "Quý khách" && input) input.value = guest;
+  $$('[data-guest-input]').forEach((input) => {
+    if (guest !== "Quý khách") input.value = guest;
+  });
 }
 
 function setupConfetti() {
@@ -127,9 +144,13 @@ function setupOpening() {
   };
   $('#open-invitation').addEventListener('click', open);
   $('#open-invitation-text').addEventListener('click', open);
+  opening.addEventListener('click', (e) => {
+    if (!opening.classList.contains('is-open')) open(e);
+  });
 
   if (query.get('preview') === '1') {
     opening.classList.add('is-hidden');
+    document.body.classList.remove('is-locked');
   } else {
     document.body.classList.add('is-locked');
   }
@@ -179,7 +200,8 @@ function setupAutoScroll() {
   let startTimer = 0;
   let lastTime = 0;
   let accumulatedScroll = 0;
-  const pixelsPerSecond = 105;
+  const customSpeed = Number(query.get('speed') || query.get('autoscrollspeed'));
+  const pixelsPerSecond = customSpeed && customSpeed >= 50 && customSpeed <= 1200 ? customSpeed : 240;
 
   const render = () => {
     if (!button) return;
@@ -204,7 +226,7 @@ function setupAutoScroll() {
     accumulatedScroll += pixelsPerSecond * delta;
     const scrollPx = Math.floor(accumulatedScroll);
     if (scrollPx > 0) {
-      window.scrollBy(0, scrollPx);
+      window.scrollBy({ top: scrollPx, behavior: 'auto' });
       accumulatedScroll -= scrollPx;
     }
 
@@ -223,7 +245,6 @@ function setupAutoScroll() {
     lastTime = 0;
     accumulatedScroll = 0;
     render();
-    showToast('Đã bật tự động cuộn · chạm màn hình để dừng');
     animFrameId = requestAnimationFrame(step);
   };
 

@@ -42,8 +42,24 @@ const $ = (selector, context = document) => context.querySelector(selector);
 const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
 
 function getGuestName() {
-  const guest = new URLSearchParams(window.location.search).get("guest");
-  return guest && guest.trim() ? guest.trim().slice(0, 80) : "Quý khách";
+  const params = new URLSearchParams(window.location.search);
+  let guest = params.get("name") || params.get("guest") || params.get("to") || params.get("g") || params.get("n") || params.get("khach");
+
+  if (!guest || !guest.trim()) return "Quý khách";
+
+  guest = guest.trim();
+
+  const nt = params.get("nt") || params.get("with") || params.get("plus");
+  if (nt) {
+    const ntLabel = (nt === "1" || nt === "true") ? "NT" : nt.trim();
+    if (!guest.toLowerCase().includes("nt") && !guest.toLowerCase().includes(ntLabel.toLowerCase())) {
+      guest += ` + ${ntLabel}`;
+    }
+  }
+
+  guest = guest.replace(/\s*\+\s*/g, " + ").replace(/\s*&\s*/g, " & ").replace(/\s+/g, " ");
+
+  return guest.slice(0, 80);
 }
 
 function hydrateContent() {
@@ -54,11 +70,12 @@ function hydrateContent() {
 
   const guest = getGuestName();
   $$('[data-guest]').forEach((element) => { element.textContent = guest; });
-  const guestInput = $('[data-guest-input]');
-  if (guestInput && guest !== "Quý khách") guestInput.value = guest;
-  $('[data-map-link]').href = WEDDING.mapUrl;
+  $$('[data-guest-input]').forEach((guestInput) => {
+    if (guest !== "Quý khách") guestInput.value = guest;
+  });
+  if ($('[data-map-link]')) $('[data-map-link]').href = WEDDING.mapUrl;
   const alternateLink = $('[data-alt-link]');
-  if (alternateLink && guest !== "Quý khách") alternateLink.href = `miu.html?guest=${encodeURIComponent(guest)}`;
+  if (alternateLink && guest !== "Quý khách") alternateLink.href = `miu.html?name=${encodeURIComponent(guest)}`;
 }
 
 function setupOpening() {
@@ -78,6 +95,7 @@ function setupOpening() {
   };
 
   openButtons.forEach((button) => button.addEventListener('click', openInvitation));
+  if (opening) opening.addEventListener('click', openInvitation);
 
   if (new URLSearchParams(window.location.search).get('preview') === '1') {
     opened = true;
