@@ -305,6 +305,13 @@ a { color: inherit; text-decoration: none; }
 .miu-gift-mark i:first-child { left: 14px; z-index: 1; transform: rotate(-5deg); }
 .miu-gift-mark i:last-child { right: 6px; z-index: 2; transform: translateX(-17px) translateY(5px) rotate(5deg); }
 .miu-gift-mark::after { position: absolute; bottom: 5px; left: 22px; z-index: 3; width: 43px; height: 1px; content: ""; background: var(--gold); transform: rotate(-16deg); }
+.miu-gift-qr { display: flex; flex-direction: column; align-items: center; width: 100%; margin: 20px auto 0; padding: 18px; border-radius: 16px; background: linear-gradient(160deg, #f0f7ee 0%, #e8f2e6 100%); border: 1px solid rgba(49,92,42,.15); text-align: center; }
+.miu-gift-qr img { width: 100%; max-width: 260px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+.miu-gift-qr__info { margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(49,92,42,.25); }
+.miu-gift-qr__info strong { display: block; font: 700 14px/1.2 var(--sans); color: var(--forest-dark); letter-spacing: .03em; }
+.miu-gift-qr__info span { display: block; margin-top: 4px; font: 600 16px/1.2 var(--sans); color: var(--forest); letter-spacing: .08em; }
+.miu-gift-qr__info small { display: block; margin-top: 5px; font: 400 11px/1 var(--sans); color: #6b8a65; text-transform: uppercase; letter-spacing: .1em; }
+.miu-gift-note { margin-top: 14px; font: 400 12px/1.5 var(--sans); color: #6b8a65; text-align: center; }
 
 .photo-viewer { width: min(92vw,850px); max-width: none; padding: 0; border: 0; background: transparent; overflow: visible; }
 .photo-viewer::backdrop { background: rgba(5,16,8,.9); backdrop-filter: blur(6px); }

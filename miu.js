@@ -459,11 +459,7 @@ function setupWishes() {
   const wall = $('#wishes-wall');
   if (!form || !wall) return;
 
-  const defaultWishes = [
-    { name: "Quốc Bảo & Lan Anh", message: "Chúc Thanh Lập & Nguyễn Sa trăm năm hạnh phúc, mãi mãi yêu thương và đồng hành bên nhau!", date: "Vừa xong" },
-    { name: "Gia đình Bác Hai", message: "Chúc hai cháu trăm năm tình mỹ mãn, đầu bạc răng long, luôn vui vẻ và ấm êm!", date: "10 phút trước" },
-    { name: "Minh Tuấn (Bạn chú rể)", message: "Mừng ngày chung đôi! Chúc vợ chồng bạn tôi luôn ngập tràn tiếng cười và hạnh phúc.", date: "1 giờ trước" },
-  ];
+  const defaultWishes = [];
 
   let currentWishes = defaultWishes;
 
