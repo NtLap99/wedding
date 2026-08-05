@@ -10,6 +10,12 @@ const $ = (selector, context = document) => context.querySelector(selector);
 const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
 const query = new URLSearchParams(window.location.search);
 
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+  })[m]);
+}
+
 function guestName() {
   const guest = query.get("guest");
   return guest && guest.trim() ? guest.trim().slice(0, 80) : "Quý khách";
@@ -19,17 +25,104 @@ function hydrateGuest() {
   const guest = guestName();
   $$('[data-guest]').forEach((node) => { node.textContent = guest; });
   const input = $('[data-guest-input]');
-  if (guest !== "Quý khách") input.value = guest;
+  if (guest !== "Quý khách" && input) input.value = guest;
+}
+
+function setupConfetti() {
+  const canvas = $('#miu-confetti');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId = 0;
+
+  const resize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+  window.addEventListener('resize', resize);
+  resize();
+
+  window.triggerConfetti = (originX = window.innerWidth / 2, originY = window.innerHeight / 2) => {
+    const colors = ['#527b42', '#ae8750', '#8cb691', '#ff6b8b', '#d4af37', '#ffffff'];
+    const count = 45;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 8 + 3;
+      particles.push({
+        x: originX,
+        y: originY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 3,
+        size: Math.random() * 12 + 8,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rSpeed: (Math.random() - 0.5) * 8,
+        opacity: 1,
+        life: 1,
+        decay: Math.random() * 0.015 + 0.01,
+        isHeart: Math.random() > 0.3,
+      });
+    }
+    if (!animId) loop();
+  };
+
+  const drawHeart = (ctx, x, y, size) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.beginPath();
+    const topCurveHeight = size * 0.3;
+    ctx.moveTo(0, topCurveHeight);
+    ctx.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+    ctx.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, size, 0, size);
+    ctx.bezierCurveTo(0, size, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+    ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  };
+
+  const loop = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.18;
+      p.rotation += p.rSpeed;
+      p.life -= p.decay;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.fillStyle = p.color;
+      if (p.isHeart) {
+        drawHeart(ctx, p.x, p.y, p.size);
+      } else {
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      }
+      ctx.restore();
+    });
+
+    particles = particles.filter((p) => p.life > 0);
+    if (particles.length > 0) {
+      animId = requestAnimationFrame(loop);
+    } else {
+      animId = 0;
+    }
+  };
 }
 
 function setupOpening() {
   const opening = $('#opening');
   const music = $('#miu-music');
-  const open = () => {
+  const open = (event) => {
     opening.classList.add('is-open');
     document.body.classList.remove('is-locked');
     music.play().catch(() => {});
     document.dispatchEvent(new CustomEvent('miu:opened'));
+    if (window.triggerConfetti && event) {
+      window.triggerConfetti(event.clientX || window.innerWidth / 2, event.clientY || window.innerHeight / 2);
+    }
     window.setTimeout(() => opening.classList.add('is-hidden'), 1350);
   };
   $('#open-invitation').addEventListener('click', open);
@@ -82,41 +175,56 @@ function setupScroll() {
 function setupAutoScroll() {
   const button = $('#auto-scroll');
   let active = false;
-  let scrollTimer = 0;
+  let animFrameId = 0;
   let startTimer = 0;
-  let previousScrollBehavior = '';
+  let lastTime = 0;
+  let accumulatedScroll = 0;
+  const pixelsPerSecond = 105;
 
   const render = () => {
+    if (!button) return;
     button.setAttribute('aria-pressed', String(active));
     button.setAttribute('aria-label', active ? 'Tắt tự động cuộn' : 'Bật tự động cuộn');
   };
 
   const stop = () => {
     active = false;
-    window.clearInterval(scrollTimer);
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    animFrameId = 0;
     window.clearTimeout(startTimer);
-    document.documentElement.style.scrollBehavior = previousScrollBehavior;
     render();
   };
 
-  const step = () => {
+  const step = (timestamp) => {
     if (!active) return;
-    window.scrollBy(0, 1);
-    const reachedBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 3;
+    if (!lastTime) lastTime = timestamp;
+    const delta = Math.min((timestamp - lastTime) / 1000, 0.1);
+    lastTime = timestamp;
+
+    accumulatedScroll += pixelsPerSecond * delta;
+    const scrollPx = Math.floor(accumulatedScroll);
+    if (scrollPx > 0) {
+      window.scrollBy(0, scrollPx);
+      accumulatedScroll -= scrollPx;
+    }
+
+    const reachedBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
     if (reachedBottom) {
       stop();
       return;
     }
+
+    animFrameId = requestAnimationFrame(step);
   };
 
   const start = () => {
     if (active) return;
     active = true;
-    previousScrollBehavior = document.documentElement.style.scrollBehavior;
-    document.documentElement.style.scrollBehavior = 'auto';
+    lastTime = 0;
+    accumulatedScroll = 0;
     render();
     showToast('Đã bật tự động cuộn · chạm màn hình để dừng');
-    scrollTimer = window.setInterval(step, 20);
+    animFrameId = requestAnimationFrame(step);
   };
 
   const scheduleStart = (delay = 1500) => {
@@ -125,7 +233,7 @@ function setupAutoScroll() {
     startTimer = window.setTimeout(start, delay);
   };
 
-  button.addEventListener('click', () => active ? stop() : start());
+  if (button) button.addEventListener('click', () => active ? stop() : start());
   window.addEventListener('wheel', stop, { passive: true });
   window.addEventListener('touchstart', (event) => {
     if (!event.target.closest('#auto-scroll')) stop();
@@ -186,7 +294,14 @@ function setupCountdown() {
     };
     Object.entries(values).forEach(([key, value]) => {
       const node = $(`[data-count="${key}"]`);
-      node.textContent = String(value).padStart(key === 'days' ? 3 : 2, '0');
+      if (node) {
+        const formatted = String(value).padStart(key === 'days' ? 3 : 2, '0');
+        if (node.textContent !== formatted) {
+          node.textContent = formatted;
+          node.style.transform = 'scale(1.12)';
+          setTimeout(() => { node.style.transform = 'scale(1)'; }, 150);
+        }
+      }
     });
   };
   update();
@@ -196,6 +311,7 @@ function setupCountdown() {
 let toastTimer;
 function showToast(message) {
   const toast = $('.miu-toast');
+  if (!toast) return;
   toast.textContent = message;
   toast.classList.add('is-visible');
   window.clearTimeout(toastTimer);
@@ -205,6 +321,8 @@ function showToast(message) {
 function setupRsvp() {
   const form = $('#miu-rsvp-form');
   const modal = $('.miu-rsvp-modal');
+  if (!form || !modal) return;
+
   $$('[data-open-miu-rsvp]').forEach((button) => button.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
     modal.showModal();
@@ -229,12 +347,16 @@ function setupRsvp() {
     const values = Object.fromEntries(new FormData(form).entries());
     window.localStorage.setItem('miu-wedding-rsvp', JSON.stringify(values));
     showToast(`Cảm ơn ${values.name}! Phản hồi của bạn đã được lưu.`);
+    if (window.triggerConfetti) {
+      window.triggerConfetti(window.innerWidth / 2, window.innerHeight / 3);
+    }
     modal.close();
   });
 }
 
 function setupGiftModal() {
   const modal = $('.miu-gift-modal');
+  if (!modal) return;
   $$('[data-open-miu-gift]').forEach((button) => button.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
     modal.showModal();
@@ -248,6 +370,7 @@ function setupGiftModal() {
 
 function setupGallery() {
   const dialog = $('.photo-viewer');
+  if (!dialog) return;
   const image = $('img', dialog);
   $$('[data-photo]').forEach((button) => button.addEventListener('click', () => {
     image.src = MIU_PHOTOS[Number(button.dataset.photo)] || MIU_PHOTOS[0];
@@ -259,7 +382,94 @@ function setupGallery() {
   });
 }
 
+function setupWishes() {
+  const form = $('#miu-wishes-form');
+  const wall = $('#wishes-wall');
+  if (!form || !wall) return;
+
+  const defaultWishes = [
+    { name: "Quốc Bảo & Lan Anh", message: "Chúc Thanh Lập & Nguyễn Sa trăm năm hạnh phúc, mãi mãi yêu thương và đồng hành bên nhau!", date: "Vừa xong" },
+    { name: "Gia đình Bác Hai", message: "Chúc hai cháu trăm năm tình mỹ mãn, đầu bạc răng long, luôn vui vẻ và ấm êm!", date: "10 phút trước" },
+    { name: "Minh Tuấn (Bạn chú rể)", message: "Mừng ngày chung đôi! Chúc vợ chồng bạn tôi luôn ngập tràn tiếng cười và hạnh phúc.", date: "1 giờ trước" },
+  ];
+
+  const getWishes = () => {
+    const local = window.localStorage.getItem('miu-wedding-wishes');
+    if (!local) return defaultWishes;
+    try {
+      return JSON.parse(local);
+    } catch (_) {
+      return defaultWishes;
+    }
+  };
+
+  const renderWishes = () => {
+    const list = getWishes();
+    wall.innerHTML = list.map((w) => `
+      <article class="wish-card">
+        <div class="wish-card__header">
+          <strong class="wish-card__author">${escapeHtml(w.name)}</strong>
+          <span class="wish-card__time">${escapeHtml(w.date || 'Vừa xong')}</span>
+        </div>
+        <p class="wish-card__text">“${escapeHtml(w.message)}”</p>
+      </article>
+    `).join('');
+  };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const name = (data.get('name') || '').trim();
+    const message = (data.get('message') || '').trim();
+    if (!name || !message) return;
+
+    const list = getWishes();
+    list.unshift({ name, message, date: 'Vừa xong' });
+    window.localStorage.setItem('miu-wedding-wishes', JSON.stringify(list));
+
+    renderWishes();
+    form.reset();
+    showToast('Cảm ơn lời chúc mừng ý nghĩa của bạn!');
+    if (window.triggerConfetti) {
+      const rect = form.getBoundingClientRect();
+      window.triggerConfetti(rect.left + rect.width / 2, rect.top);
+    }
+  });
+
+  renderWishes();
+}
+
+function setupTouchSparkles() {
+  let lastTime = 0;
+  const symbols = ['✨', '✦', '★', '♥'];
+  const colors = ['#ffd700', '#ff85a2', '#8cb691', '#ffffff', '#e8b974'];
+
+  const createSparkle = (x, y) => {
+    const el = document.createElement('i');
+    el.className = 'touch-sparkle';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    el.style.color = colors[Math.floor(Math.random() * colors.length)];
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 800);
+  };
+
+  const handleMove = (e) => {
+    const now = Date.now();
+    if (now - lastTime < 50) return;
+    lastTime = now;
+    const x = e.clientX || (e.touches && e.touches[0].clientX);
+    const y = e.clientY || (e.touches && e.touches[0].clientY);
+    if (x && y) createSparkle(x, y);
+  };
+
+  window.addEventListener('mousemove', handleMove, { passive: true });
+  window.addEventListener('touchmove', handleMove, { passive: true });
+}
+
 hydrateGuest();
+setupConfetti();
 setupOpening();
 setupReveal();
 setupScroll();
@@ -269,3 +479,5 @@ setupCountdown();
 setupRsvp();
 setupGiftModal();
 setupGallery();
+setupWishes();
+setupTouchSparkles();
