@@ -218,6 +218,8 @@ function setupAutoScroll() {
   let startTimer = 0;
   let lastTime = 0;
   let accumulatedScroll = 0;
+  let programmaticScroll = false;
+  let userTouching = false;
   const customSpeed = Number(query.get('speed') || query.get('autoscrollspeed'));
   const pixelsPerSecond = customSpeed && customSpeed >= 50 && customSpeed <= 1200 ? customSpeed : 240;
 
@@ -237,19 +239,21 @@ function setupAutoScroll() {
 
   const step = (timestamp) => {
     if (!active) return;
-    if (!lastTime) lastTime = timestamp;
+    if (lastTime === 0) { lastTime = timestamp; animFrameId = requestAnimationFrame(step); return; }
     const delta = Math.min((timestamp - lastTime) / 1000, 0.1);
     lastTime = timestamp;
 
     accumulatedScroll += pixelsPerSecond * delta;
     const scrollPx = Math.floor(accumulatedScroll);
     if (scrollPx > 0) {
-      window.scrollBy({ top: scrollPx, behavior: 'auto' });
+      programmaticScroll = true;
+      window.scrollTo(0, window.scrollY + scrollPx);
       accumulatedScroll -= scrollPx;
+      requestAnimationFrame(() => { programmaticScroll = false; });
     }
 
-    const reachedBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-    if (reachedBottom) {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (window.scrollY >= maxScroll - 4) {
       stop();
       return;
     }
@@ -262,6 +266,7 @@ function setupAutoScroll() {
     active = true;
     lastTime = 0;
     accumulatedScroll = 0;
+    programmaticScroll = false;
     render();
     animFrameId = requestAnimationFrame(step);
   };
@@ -273,15 +278,33 @@ function setupAutoScroll() {
   };
 
   if (button) button.addEventListener('click', () => active ? stop() : start());
-  window.addEventListener('wheel', stop, { passive: true });
+
+  /* Desktop: mouse wheel stops auto-scroll */
+  window.addEventListener('wheel', () => {
+    if (active) stop();
+  }, { passive: true });
+
+  /* Mobile: track genuine user touch gestures */
   window.addEventListener('touchstart', (event) => {
-    if (event.target.closest('#auto-scroll') || event.target.closest('.floating-actions')) return;
-    if (active) stop();
+    if (event.target.closest('.floating-actions')) return;
+    userTouching = true;
   }, { passive: true });
+
   window.addEventListener('touchmove', () => {
-    if (active) stop();
-    window.clearTimeout(startTimer);
+    if (userTouching && !programmaticScroll) {
+      if (active) stop();
+      window.clearTimeout(startTimer);
+    }
   }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    userTouching = false;
+  }, { passive: true });
+
+  window.addEventListener('touchcancel', () => {
+    userTouching = false;
+  }, { passive: true });
+
   window.addEventListener('keydown', (event) => {
     if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) stop();
   });
