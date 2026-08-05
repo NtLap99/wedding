@@ -219,8 +219,9 @@ function setupAutoScroll() {
   let lastTime = 0;
   let accumulatedScroll = 0;
   let userTouching = false;
+  let touchStartY = 0;
   const customSpeed = Number(query.get('speed') || query.get('autoscrollspeed'));
-  const pixelsPerSecond = customSpeed && customSpeed >= 50 && customSpeed <= 1200 ? customSpeed : 240;
+  const pixelsPerSecond = customSpeed && customSpeed >= 20 && customSpeed <= 1200 ? customSpeed : 75;
 
   const render = () => {
     if (!button) return;
@@ -233,6 +234,7 @@ function setupAutoScroll() {
     if (animFrameId) cancelAnimationFrame(animFrameId);
     animFrameId = 0;
     window.clearTimeout(startTimer);
+    document.documentElement.style.scrollBehavior = '';
     render();
   };
 
@@ -249,13 +251,13 @@ function setupAutoScroll() {
     accumulatedScroll += pixelsPerSecond * delta;
     const scrollPx = Math.floor(accumulatedScroll);
     if (scrollPx > 0) {
-      /* Gán scrollTop trực tiếp — bypass CSS scroll-behavior: smooth */
-      document.documentElement.scrollTop += scrollPx;
+      window.scrollBy(0, scrollPx);
       accumulatedScroll -= scrollPx;
     }
 
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    if (document.documentElement.scrollTop >= maxScroll - 4) {
+    const currentScroll = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    if (currentScroll >= maxScroll - 4) {
       stop();
       return;
     }
@@ -268,6 +270,8 @@ function setupAutoScroll() {
     active = true;
     lastTime = 0;
     accumulatedScroll = 0;
+    /* Tắt smooth scroll trong CSS để tránh xung đột animation gây đơ trên điện thoại */
+    document.documentElement.style.scrollBehavior = 'auto';
     render();
     animFrameId = requestAnimationFrame(step);
   };
@@ -278,7 +282,12 @@ function setupAutoScroll() {
     startTimer = window.setTimeout(start, delay);
   };
 
-  if (button) button.addEventListener('click', () => active ? stop() : start());
+  if (button) {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      active ? stop() : start();
+    });
+  }
 
   window.addEventListener('wheel', () => {
     if (active) stop();
@@ -287,11 +296,18 @@ function setupAutoScroll() {
   window.addEventListener('touchstart', (event) => {
     if (event.target.closest('.floating-actions')) return;
     userTouching = true;
+    const touch = event.touches && event.touches[0];
+    if (touch) touchStartY = touch.clientY;
     if (active) stop();
   }, { passive: true });
 
-  window.addEventListener('touchmove', () => {
-    if (userTouching) window.clearTimeout(startTimer);
+  window.addEventListener('touchmove', (event) => {
+    const touch = event.touches && event.touches[0];
+    /* Chỉ hủy hẹn giờ cuộn nếu ngón tay thực sự kéo trượt màn hình > 10px */
+    if (userTouching && touch && Math.abs(touch.clientY - touchStartY) > 10) {
+      window.clearTimeout(startTimer);
+      if (active) stop();
+    }
   }, { passive: true });
 
   window.addEventListener('touchend', () => { userTouching = false; }, { passive: true });
@@ -510,16 +526,18 @@ function setupTouchSparkles() {
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
     el.style.color = colors[Math.floor(Math.random() * colors.length)];
+    el.style.pointerEvents = 'none';
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 800);
   };
 
   const handleMove = (e) => {
     const now = Date.now();
-    if (now - lastTime < 50) return;
+    if (now - lastTime < 60) return;
     lastTime = now;
-    const x = e.clientX || (e.touches && e.touches[0].clientX);
-    const y = e.clientY || (e.touches && e.touches[0].clientY);
+    const touch = e.touches && e.touches[0];
+    const x = e.clientX || (touch && touch.clientX);
+    const y = e.clientY || (touch && touch.clientY);
     if (x && y) createSparkle(x, y);
   };
 
