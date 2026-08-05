@@ -134,13 +134,19 @@ function setupOpening() {
   const music = $('#miu-music');
   const open = (event) => {
     opening.classList.add('is-open');
+    opening.style.pointerEvents = 'none';
     document.body.classList.remove('is-locked');
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     music.play().catch(() => {});
     document.dispatchEvent(new CustomEvent('miu:opened'));
     if (window.triggerConfetti && event) {
       window.triggerConfetti(event.clientX || window.innerWidth / 2, event.clientY || window.innerHeight / 2);
     }
-    window.setTimeout(() => opening.classList.add('is-hidden'), 1350);
+    window.setTimeout(() => {
+      opening.classList.add('is-hidden');
+      opening.style.display = 'none';
+    }, 1350);
   };
   $('#open-invitation').addEventListener('click', open);
   $('#open-invitation-text').addEventListener('click', open);
@@ -148,9 +154,12 @@ function setupOpening() {
     if (!opening.classList.contains('is-open')) open(e);
   });
 
-  if (query.get('preview') === '1') {
+  if (query.get('preview') === '1' || opening.classList.contains('is-open')) {
     opening.classList.add('is-hidden');
+    opening.style.pointerEvents = 'none';
+    opening.style.display = 'none';
     document.body.classList.remove('is-locked');
+    document.body.style.overflow = '';
   } else {
     document.body.classList.add('is-locked');
   }

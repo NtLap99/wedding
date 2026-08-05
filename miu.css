@@ -109,11 +109,12 @@ a { color: inherit; text-decoration: none; }
 .opening__seal { position: absolute; top: 50%; left: 68%; z-index: 3; width: 78px; height: 78px; padding: 0; border: 0; border-radius: 50%; background: #b59157; box-shadow: inset 0 0 0 3px #d8b77b, inset 0 0 15px #78552e, 0 6px 18px rgba(0,0,0,.28); transform: translate(-50%,-50%); cursor: pointer; transition: transform .45s ease, opacity .35s ease; }
 .opening__seal:hover { transform: translate(-50%,-50%) scale(1.08) rotate(4deg); }
 .opening__seal svg { width: 100%; fill: none; stroke: #4c351d; stroke-width: 2; }
+.opening.is-open { pointer-events: none; }
 .opening.is-open .opening__panel--left { transform: translateX(-101%); }
 .opening.is-open .opening__panel--right { transform: translateX(101%); }
 .opening.is-open .opening__seal { opacity: 0; transform: translate(-50%,-50%) scale(.45) rotate(30deg); }
 .opening.is-open .opening__ribbon { opacity: 0; }
-.opening.is-hidden { visibility: hidden; pointer-events: none; }
+.opening.is-hidden { visibility: hidden; pointer-events: none; display: none; }
 
 
 /* ── Hero ─────────────────────────────────────────── */

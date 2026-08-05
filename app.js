@@ -88,10 +88,15 @@ function setupOpening() {
     if (opened) return;
     opened = true;
     opening.classList.add('is-open');
+    if (opening) opening.style.pointerEvents = 'none';
     document.body.classList.remove('no-scroll');
+    document.body.style.overflow = '';
     $('#background-music').play().catch(() => {});
     window.setTimeout(showCover, animationDisabled ? 0 : 280);
-    window.setTimeout(() => opening.classList.add('is-hidden'), animationDisabled ? 0 : 1350);
+    window.setTimeout(() => {
+      opening.classList.add('is-hidden');
+      if (opening) opening.style.display = 'none';
+    }, animationDisabled ? 0 : 1350);
   };
 
   openButtons.forEach((button) => button.addEventListener('click', openInvitation));
