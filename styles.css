@@ -24,7 +24,7 @@ body {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
-body.no-scroll { overflow: hidden; }
+body.no-scroll { overflow: hidden !important; touch-action: none; }
 img { display: block; width: 100%; }
 button, input, select, textarea { font: inherit; }
 button { color: inherit; }

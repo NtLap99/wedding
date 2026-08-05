@@ -38,15 +38,16 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+html, body { max-width: 100%; -webkit-overflow-scrolling: touch; }
 body { margin: 0; background: #e7e9e5; color: var(--forest-dark); font-family: var(--serif); font-size: var(--text-base); line-height: var(--leading-normal); -webkit-font-smoothing: antialiased; }
-body.is-locked { overflow: hidden; }
+body.is-locked { overflow: hidden !important; touch-action: none; }
 img { display: block; width: 100%; }
 button, input, select, textarea { font: inherit; }
 button { color: inherit; }
 a { color: inherit; text-decoration: none; }
 
-.miu-page { width: min(575px, 100%); margin: 0 auto; overflow-x: hidden; background: var(--paper); box-shadow: 0 0 32px rgba(31,66,31,.16); }
+.miu-page { width: min(575px, 100%); margin: 0 auto; overflow: visible; background: var(--paper); box-shadow: 0 0 32px rgba(31,66,31,.16); }
 .paper-section { position: relative; background-color: var(--paper); background-image: radial-gradient(rgba(49,92,42,.055) .65px, transparent .65px); background-size: 5px 5px; }
 .progress { position: fixed; top: 0; left: 50%; z-index: 200; width: min(575px,100%); height: 3px; transform: translateX(-50%); pointer-events: none; }
 .progress span { display: block; height: 100%; background: linear-gradient(90deg,#8cb691,#315c2a); transform: scaleX(0); transform-origin: left; }

@@ -132,34 +132,43 @@ function setupConfetti() {
 function setupOpening() {
   const opening = $('#opening');
   const music = $('#miu-music');
+  let isOpened = false;
+
   const open = (event) => {
+    if (isOpened) return;
+    isOpened = true;
+
     opening.classList.add('is-open');
     opening.style.pointerEvents = 'none';
+
     document.body.classList.remove('is-locked');
-    document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
+    document.body.style.overflow = 'auto';
+    document.body.style.touchAction = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    document.documentElement.style.touchAction = 'auto';
+
     music.play().catch(() => {});
     document.dispatchEvent(new CustomEvent('miu:opened'));
-    if (window.triggerConfetti && event) {
-      window.triggerConfetti(event.clientX || window.innerWidth / 2, event.clientY || window.innerHeight / 2);
+
+    if (window.triggerConfetti && event && event.clientX) {
+      window.triggerConfetti(event.clientX, event.clientY);
     }
+
     window.setTimeout(() => {
       opening.classList.add('is-hidden');
       opening.style.display = 'none';
     }, 1350);
   };
-  $('#open-invitation').addEventListener('click', open);
-  $('#open-invitation-text').addEventListener('click', open);
-  opening.addEventListener('click', (e) => {
-    if (!opening.classList.contains('is-open')) open(e);
+
+  const targets = [$('#open-invitation'), $('#open-invitation-text'), opening].filter(Boolean);
+  targets.forEach((node) => {
+    node.addEventListener('click', open);
+    node.addEventListener('touchstart', open, { passive: true });
+    node.addEventListener('pointerdown', open, { passive: true });
   });
 
   if (query.get('preview') === '1' || opening.classList.contains('is-open')) {
-    opening.classList.add('is-hidden');
-    opening.style.pointerEvents = 'none';
-    opening.style.display = 'none';
-    document.body.classList.remove('is-locked');
-    document.body.style.overflow = '';
+    open();
   } else {
     document.body.classList.add('is-locked');
   }
@@ -266,7 +275,12 @@ function setupAutoScroll() {
   if (button) button.addEventListener('click', () => active ? stop() : start());
   window.addEventListener('wheel', stop, { passive: true });
   window.addEventListener('touchstart', (event) => {
-    if (!event.target.closest('#auto-scroll')) stop();
+    if (event.target.closest('#auto-scroll') || event.target.closest('.floating-actions')) return;
+    if (active) stop();
+  }, { passive: true });
+  window.addEventListener('touchmove', () => {
+    if (active) stop();
+    window.clearTimeout(startTimer);
   }, { passive: true });
   window.addEventListener('keydown', (event) => {
     if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) stop();

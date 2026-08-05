@@ -84,27 +84,45 @@ function setupOpening() {
   const showCover = () => $$('.cover .reveal').forEach((item) => item.classList.add('is-visible'));
   let opened = false;
 
-  const openInvitation = () => {
+  const openInvitation = (event) => {
     if (opened) return;
     opened = true;
-    opening.classList.add('is-open');
-    if (opening) opening.style.pointerEvents = 'none';
+
+    if (opening) {
+      opening.classList.add('is-open');
+      opening.style.pointerEvents = 'none';
+    }
+
     document.body.classList.remove('no-scroll');
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'auto';
+    document.body.style.touchAction = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    document.documentElement.style.touchAction = 'auto';
+
     $('#background-music').play().catch(() => {});
     window.setTimeout(showCover, animationDisabled ? 0 : 280);
     window.setTimeout(() => {
-      opening.classList.add('is-hidden');
-      if (opening) opening.style.display = 'none';
+      if (opening) {
+        opening.classList.add('is-hidden');
+        opening.style.display = 'none';
+      }
     }, animationDisabled ? 0 : 1350);
   };
 
-  openButtons.forEach((button) => button.addEventListener('click', openInvitation));
-  if (opening) opening.addEventListener('click', openInvitation);
+  openButtons.forEach((button) => {
+    button.addEventListener('click', openInvitation);
+    button.addEventListener('touchstart', openInvitation, { passive: true });
+    button.addEventListener('pointerdown', openInvitation, { passive: true });
+  });
+
+  if (opening) {
+    opening.addEventListener('click', openInvitation);
+    opening.addEventListener('touchstart', openInvitation, { passive: true });
+    opening.addEventListener('pointerdown', openInvitation, { passive: true });
+  }
 
   if (new URLSearchParams(window.location.search).get('preview') === '1') {
-    opened = true;
-    opening.classList.add('is-hidden');
+    openInvitation();
     window.addEventListener('load', showCover, { once: true });
   } else {
     document.body.classList.add('no-scroll');
