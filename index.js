@@ -358,6 +358,81 @@ function setupMusic() {
   render();
 }
 
+function setupTimelineFocus() {
+  const timeline = $('.timeline');
+  if (!timeline) return;
+
+  const items = $$('article', timeline);
+  const progress = $('.timeline__line span', timeline);
+  if (!items.length || !progress) return;
+
+  let ticking = false;
+  let activeIndex = -1;
+
+  const setActive = (index) => {
+    const safeIndex = Math.max(0, Math.min(items.length - 1, index));
+
+    if (safeIndex !== activeIndex) {
+      items.forEach((item, itemIndex) => {
+        item.classList.toggle('is-active', itemIndex === safeIndex);
+        item.classList.toggle('is-complete', itemIndex < safeIndex);
+      });
+      activeIndex = safeIndex;
+    }
+
+    const ratio = items.length > 1 ? safeIndex / (items.length - 1) : 1;
+    progress.style.height = `${ratio * 100}%`;
+  };
+
+  const update = () => {
+    const timelineRect = timeline.getBoundingClientRect();
+
+    if (timelineRect.top > window.innerHeight) {
+      items.forEach((item) => item.classList.remove('is-active', 'is-complete'));
+      progress.style.height = '0%';
+      activeIndex = -1;
+      ticking = false;
+      return;
+    }
+
+    if (timelineRect.bottom < 0) {
+      setActive(items.length - 1);
+      ticking = false;
+      return;
+    }
+
+    const focusY = window.innerHeight * 0.53;
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    items.forEach((item, index) => {
+      const node = $('i', item);
+      const rect = (node || item).getBoundingClientRect();
+      const center = rect.top + rect.height / 2;
+      const distance = Math.abs(center - focusY);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    setActive(closestIndex);
+    ticking = false;
+  };
+
+  const scheduleUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  };
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate, { passive: true });
+  document.addEventListener('miu:opened', scheduleUpdate);
+  scheduleUpdate();
+}
+
 function setupCountdown() {
   const update = () => {
     const remaining = Math.max(0, MIU_WEDDING_DATE - Date.now());
@@ -578,6 +653,7 @@ hydrateGuest();
 setupConfetti();
 setupOpening();
 setupReveal();
+setupTimelineFocus();
 setupScroll();
 setupMusic();
 setupAutoScroll();
