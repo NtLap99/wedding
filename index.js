@@ -571,35 +571,103 @@ function setupWishes() {
   const wall = $('#wishes-wall');
   if (!form || !wall) return;
 
-  const defaultWishes = [];
+  const INITIAL_VISIBLE = 5;
+  let currentWishes = [];
+  let expanded = false;
 
-  let currentWishes = defaultWishes;
+  // Tự tạo nút nếu HTML hiện tại chưa có.
+  let toggle = $('#wishes-toggle');
+  if (!toggle) {
+    toggle = document.createElement('button');
+    toggle.id = 'wishes-toggle';
+    toggle.className = 'wishes__toggle';
+    toggle.type = 'button';
+    toggle.hidden = true;
+    toggle.setAttribute('aria-controls', 'wishes-wall');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = `
+      <span class="wishes__toggle-label">Xem thêm lời chúc</span>
+      <i aria-hidden="true">↓</i>
+    `;
+    wall.insertAdjacentElement('afterend', toggle);
+  }
 
-  const renderWishes = (wishesList) => {
-    const list = wishesList && wishesList.length ? wishesList : currentWishes;
-    currentWishes = list;
-    wall.innerHTML = list.map((w) => `
-      <article class="wish-card">
-        <div class="wish-card__header">
-          <strong class="wish-card__author">${escapeHtml(w.name)}</strong>
-          <span class="wish-card__time">${escapeHtml(w.date || 'Vừa xong')}</span>
-        </div>
-        <p class="wish-card__text">“${escapeHtml(w.message)}”</p>
-      </article>
-    `).join('');
+  const toggleLabel = $('.wishes__toggle-label', toggle) || $('span', toggle);
+  const toggleIcon = $('i', toggle);
+
+  const updateToggle = () => {
+    const remaining = Math.max(0, currentWishes.length - INITIAL_VISIBLE);
+    const hasMore = currentWishes.length > INITIAL_VISIBLE;
+
+    if (!hasMore) expanded = false;
+
+    toggle.hidden = !hasMore;
+    toggle.setAttribute('aria-expanded', String(expanded));
+
+    if (toggleLabel) {
+      toggleLabel.textContent = expanded
+        ? 'Thu gọn'
+        : `Xem thêm ${remaining} lời chúc`;
+    }
+
+    /*
+     * Luôn giữ ký tự ↓ trong DOM.
+     * Khi mở rộng, aria-expanded="true" để CSS xoay thành ↑
+     * hoặc đổi nội dung bằng ::before. Cách này tránh icon bị xoay hai lần.
+     */
+    if (toggleIcon) toggleIcon.textContent = '↓';
   };
 
-  renderWishes();
+  const renderWishes = (wishesList) => {
+    if (Array.isArray(wishesList)) currentWishes = wishesList;
 
-  // Listen for real-time Firebase Firestore updates
+    if (currentWishes.length <= INITIAL_VISIBLE) expanded = false;
+
+    const visibleWishes = expanded
+      ? currentWishes
+      : currentWishes.slice(0, INITIAL_VISIBLE);
+
+    wall.innerHTML = visibleWishes.map((wish) => `
+      <article class="wish-card">
+        <div class="wish-card__header">
+          <strong class="wish-card__author">${escapeHtml(wish.name)}</strong>
+          <span class="wish-card__time">${escapeHtml(wish.date || 'Vừa xong')}</span>
+        </div>
+        <p class="wish-card__text">“${escapeHtml(wish.message)}”</p>
+      </article>
+    `).join('');
+
+    wall.classList.toggle(
+      'is-expanded',
+      expanded && currentWishes.length > INITIAL_VISIBLE
+    );
+
+    updateToggle();
+  };
+
+  toggle.addEventListener('click', () => {
+    if (currentWishes.length <= INITIAL_VISIBLE) return;
+
+    expanded = !expanded;
+    renderWishes();
+
+    if (!expanded) {
+      wall.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+
+  renderWishes([]);
+
+  // Nhận danh sách lời chúc theo thời gian thực từ Firebase Firestore.
   if (typeof WeddingDB !== 'undefined') {
     WeddingDB.onWishesUpdate((remoteWishes) => {
-      renderWishes(remoteWishes);
+      renderWishes(Array.isArray(remoteWishes) ? remoteWishes : []);
     });
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
     const data = new FormData(form);
     const name = (data.get('name') || '').trim();
     const message = (data.get('message') || '').trim();
@@ -611,6 +679,7 @@ function setupWishes() {
 
     form.reset();
     showToast('Cảm ơn lời chúc mừng ý nghĩa của bạn!');
+
     if (window.triggerConfetti) {
       const rect = form.getBoundingClientRect();
       window.triggerConfetti(rect.left + rect.width / 2, rect.top);

@@ -93,7 +93,7 @@
           <span>Đến dự bữa tiệc chung vui cùng chúng tôi</span>
         </div>
         <div class="couple-names reveal">
-          <h2 class="green-shimmer-text">Thanh Lập</h2><i>and</i><h2 class="green-shimmer-text">Nguyễn Sa</h2>
+          <h2 class="green-shimmer-text">Thanh Lập</h2><i>&</i><h2 class="green-shimmer-text">Nguyễn Sa</h2>
         </div>
         <div class="flourish reveal" aria-hidden="true"><span></span><i>❧</i><span></span></div>
       </section>
@@ -104,12 +104,26 @@
             <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           </div>
           <p class="event-card__title">Lễ Thành Hôn</p>
-          <div class="event-card__date-box">
-            <div class="event-card__time"><b>7</b><i>:</i><b>30</b></div>
-            <span class="event-card__day">Chủ Nhật</span>
+          <p class="event-card__schedule">
+            <span>Vào lúc</span>
+            <strong>07:30</strong>
+            <span class="event-card__schedule-day">Chủ Nhật</span>
+          </p>
+          <div class="event-card__date-box" aria-label="Ngày 25 tháng 10 năm 2026">
+            <div class="event-card__date-part">
+              <span>Ngày</span>
+              <b>25</b>
+            </div>
+            <div class="event-card__date-part">
+              <span>Tháng</span>
+              <b>10</b>
+            </div>
+            <div class="event-card__date-part">
+              <span>Năm</span>
+              <b>26</b>
+            </div>
           </div>
-          <strong>25.10.2026</strong>
-          <em>(Nhằm ngày 17 tháng 09 năm Bính Ngọ)</em>
+          <em class="event-card__lunar">(Nhằm ngày 17 tháng 09 năm Bính Ngọ)</em>
           <div class="event-card__venue">
             <h3>Tư Gia Nhà Trai</h3>
             <small>Tổ 2, Ấp 4, Xã An viễn, TP.Đồng Nai</small>
@@ -126,12 +140,26 @@
             <svg viewBox="0 0 24 24"><path d="M8 22h8M12 15v7M12 15a7 7 0 0 0 7-7V3H5v5a7 7 0 0 0 7 7zM5 7h14"/></svg>
           </div>
           <p class="event-card__title">Tiệc Mừng</p>
-          <div class="event-card__date-box">
-            <div class="event-card__time"><b>11</b><i>:</i><b>00</b></div>
-            <span class="event-card__day">Chủ Nhật</span>
+          <p class="event-card__schedule">
+            <span>Vào lúc</span>
+            <strong>11:00</strong>
+            <span class="event-card__schedule-day">Chủ Nhật</span>
+          </p>
+          <div class="event-card__date-box" aria-label="Ngày 25 tháng 10 năm 2026">
+            <div class="event-card__date-part">
+              <span>Ngày</span>
+              <b>25</b>
+            </div>
+            <div class="event-card__date-part">
+              <span>Tháng</span>
+              <b>10</b>
+            </div>
+            <div class="event-card__date-part">
+              <span>Năm</span>
+              <b>26</b>
+            </div>
           </div>
-          <strong>25.10.2026</strong>
-          <em>(Nhằm ngày 17 tháng 09 năm Bính Ngọ)</em>
+          <em class="event-card__lunar">(Nhằm ngày 17 tháng 09 năm Bính Ngọ)</em>
           <div class="event-card__venue">
             <h3>Nhà Hàng Tiệc Cưới Hồng Ngọc</h3>
             <small>116a Phùng Hưng, Xã An Phước, TP.Đồng Nai</small>
@@ -191,6 +219,15 @@
           <button type="submit"><i>💌</i> Gửi Lời Chúc Mừng</button>
         </form>
         <div class="wishes__wall reveal" id="wishes-wall"></div>
+        <button
+        class="wishes__toggle"
+        type="button"
+        aria-expanded="false"
+        hidden
+      >
+        <span class="wishes__toggle-label">Xem thêm lời chúc</span>
+        <i aria-hidden="true"></i>
+      </button>
       </section>
 
       <section class="memories paper-section">
@@ -234,7 +271,7 @@
           </article>
 
           <article class="reveal">
-            <b>12:00</b>
+            <b>12:15</b>
             <i>03</i>
             <div>
               <h3>Khai tiệc mừng</h3>
@@ -242,14 +279,14 @@
             </div>
           </article>
 
-          <article class="reveal">
+          <!-- <article class="reveal">
             <b>14:00</b>
             <i>04</i>
             <div>
               <h3>Lời tri ân</h3>
               <p>Cô dâu chú rể gửi lời cảm ơn chân thành đến toàn thể quý quan khách.</p>
             </div>
-          </article>
+          </article> -->
         </div>
       </section>
 
