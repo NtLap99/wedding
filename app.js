@@ -22,10 +22,10 @@ const WEDDING = {
   groomAddress: "Địa chỉ nhà trai sẽ được cập nhật",
   brideAddress: "Địa chỉ nhà gái sẽ được cập nhật",
   ceremonyVenue: "Tại tư gia nhà trai",
-  receptionVenue: "Địa điểm sẽ được cập nhật",
-  venueName: "Tư gia nhà trai",
-  venueAddress: "Địa chỉ cụ thể sẽ được gia đình gửi tới quý khách",
-  mapUrl: "https://maps.google.com",
+  receptionVenue: "Nhà Hàng Tiệc Cưới Hồng Ngọc",
+  venueName: "Tư Gia Nhà Trai & Nhà Hàng Hồng Ngọc",
+  venueAddress: "Tư gia nhà trai & Nhà Hàng Tiệc Cưới Hồng Ngọc",
+  mapUrl: "https://maps.google.com/?q=Nhà+Hàng+Tiệc+Cưới+Hồng+Ngọc,+10.8593451,106.9513887",
 };
 
 const galleryImages = [

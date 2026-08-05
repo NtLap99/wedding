@@ -183,6 +183,8 @@ a { color: inherit; text-decoration: none; }
 .event-card a { position: relative; z-index: 2; display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: 14px; padding: 9px 22px; border: 1px solid var(--forest); border-radius: 30px; color: var(--forest); background: transparent; font: 600 var(--text-xs)/1 var(--sans); letter-spacing: var(--tracking-normal); text-transform: uppercase; transition: all .25s ease; }
 .event-card a:hover { color: white; background: var(--forest); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(49,92,42,.25); }
 .event-card a svg { width: 14px; height: 14px; fill: stroke; stroke: currentColor; stroke-width: 1.8; }
+.event-card__map { position: relative; z-index: 2; width: 100%; height: 230px; margin-top: 14px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 14px rgba(31,66,31,.12); border: 1px solid rgba(49,92,42,.2); }
+.event-card__map iframe { width: 100%; height: 100%; border: 0; display: block; }
 
 /* ── Date Scene / Calendar ─────────────────────────── */
 .date-scene { position: relative; height: 780px; overflow: hidden; color: white; }
