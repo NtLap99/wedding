@@ -444,10 +444,22 @@ function setupGallery() {
   const dialog = $('.photo-viewer');
   if (!dialog) return;
   const image = $('img', dialog);
+  let currentIndex = 0;
+
+  const showPhoto = (index) => {
+    if (index < 0) index = MIU_PHOTOS.length - 1;
+    if (index >= MIU_PHOTOS.length) index = 0;
+    currentIndex = index;
+    image.src = MIU_PHOTOS[currentIndex];
+  };
+
   $$('[data-photo]').forEach((button) => button.addEventListener('click', () => {
-    image.src = MIU_PHOTOS[Number(button.dataset.photo)] || MIU_PHOTOS[0];
+    showPhoto(Number(button.dataset.photo) || 0);
     dialog.showModal();
   }));
+
+  $('[data-prev-photo]').addEventListener('click', () => showPhoto(currentIndex - 1));
+  $('[data-next-photo]').addEventListener('click', () => showPhoto(currentIndex + 1));
   $('[data-close-photo]').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) dialog.close();
