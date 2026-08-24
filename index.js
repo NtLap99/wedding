@@ -1,9 +1,24 @@
 const MIU_WEDDING_DATE = new Date("2026-10-25T10:00:00+07:00").getTime();
 const MIU_PHOTOS = [
-  "assets/images/hero.jpg",
-  "assets/images/garden.jpg",
-  "assets/images/portrait.jpg",
-  "assets/images/veil.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576300/MSO00046.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576342/MSO00163.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576337/MSO09469.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576333/MSO00453.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576328/MSO09775.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576328/MSO00426.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576327/MSO00438.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576327/MSO09759.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576323/MSO00528.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576322/MSO00392.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576320/MSO00334.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576314/MSO00298.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576313/MSO00525.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576313/MSO00202.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576313/MSO00199.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576313/MSO00248.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576305/MSO09786.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576305/MSO00142.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576342/MSO09519.jpg",
 ];
 
 const $ = (selector, context = document) => context.querySelector(selector);
