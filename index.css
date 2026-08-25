@@ -142,11 +142,18 @@ a { color: inherit; text-decoration: none; }
 .families > div:not(.families__mark) { display: flex; flex-direction: column; gap: 8px; }
 .families b { font: 700 var(--text-xs)/1 var(--sans); letter-spacing: var(--tracking-wide); text-transform: uppercase; }
 .families span { font: italic var(--text-sm)/var(--leading-normal) var(--serif); }
-.families__mark { position: relative; height: 66px; }
-.families__mark i { position: absolute; top: 0; font: 500 57px/.9 var(--serif); letter-spacing: -.12em; }
-.families__mark i:first-child { left: 13px; z-index: 1; transform: rotate(-5deg); }
-.families__mark i:last-child { right: 7px; z-index: 2; transform: translateX(-15px) translateY(4px) rotate(5deg); }
-.families__mark::after { position: absolute; bottom: 5px; left: 21px; z-index: 3; width: 38px; height: 1px; content: ""; background: var(--gold); opacity: .78; transform: rotate(-16deg); }
+.families__mark { position: relative; display: grid; width: 78px; height: 78px; place-items: center; border: 1px solid var(--gold); border-radius: 50%; background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.94), rgba(220,235,221,.58)); box-shadow: 0 7px 18px rgba(31,66,31,.1), inset 0 0 0 4px rgba(255,255,255,.72); }
+.families__mark::before { position: absolute; inset: 7px; content: ""; border: 1px dashed color-mix(in srgb, var(--gold) 72%, transparent); border-radius: 50%; }
+.families__mark::after { position: absolute; top: 50%; left: 50%; width: 34px; height: 1px; content: ""; background: var(--gold); opacity: .75; transform: translate(-50%,-50%) rotate(-45deg); }
+.families__mark i { position: absolute; z-index: 1; color: var(--forest-dark); font: 500 45px/.8 var(--serif); letter-spacing: -.12em; }
+.families__mark i:first-child { left: 18px; top: 17px; transform: rotate(-8deg); }
+.families__mark i:last-child { right: 15px; bottom: 14px; transform: rotate(7deg); }
+body.bride-variant .families__mark { background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.98), rgba(248,213,218,.72)); }
+.families__mark { position: relative; top: -10px; align-self: center; justify-self: center; width: 82px; height: 72px; margin: 0 auto; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.families__mark::before,
+.families__mark::after { display: none; }
+.families__mark img { width: 100%; height: 100%; margin: 0; object-fit: contain; object-position: 50% 50%; filter: drop-shadow(0 4px 8px rgba(49,92,42,.16)); }
+body.bride-variant .families__mark { background: transparent; }
 .invite__copy { position: relative; z-index: 1; display: flex; align-items: center; flex-direction: column; margin-top: 65px; }
 .invite__copy p { margin: 0; font: 500 var(--text-md)/1 var(--sans); letter-spacing: var(--tracking-wide); text-transform: uppercase; }
 .invite__copy strong { min-width: 260px; margin: 21px 0; padding: 0 14px 5px; border-bottom: 1px solid var(--leaf); font: italic var(--text-xl)/1 var(--serif); }
@@ -753,6 +760,10 @@ a { color: inherit; text-decoration: none; }
 .miu-gift-mark i:first-child { left: 14px; z-index: 1; transform: rotate(-5deg); }
 .miu-gift-mark i:last-child { right: 6px; z-index: 2; transform: translateX(-17px) translateY(5px) rotate(5deg); }
 .miu-gift-mark::after { position: absolute; bottom: 5px; left: 22px; z-index: 3; width: 43px; height: 1px; content: ""; background: var(--gold); transform: rotate(-16deg); }
+.miu-gift-mark { width: 120px; height: 78px; }
+.miu-gift-mark i,
+.miu-gift-mark::after { display: none; }
+.miu-gift-mark img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(49,92,42,.15)); }
 .miu-gift-qr { display: flex; flex-direction: column; align-items: center; width: 100%; margin: 20px auto 0; padding: 18px; border-radius: 16px; background: linear-gradient(160deg, #f0f7ee 0%, #e8f2e6 100%); border: 1px solid rgba(49,92,42,.15); text-align: center; }
 .miu-gift-qr img { width: 100%; max-width: 260px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
 .miu-gift-qr__info { margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(49,92,42,.25); }
@@ -990,6 +1001,7 @@ body.bride-variant .wishes__form { border-color: rgba(157,16,36,.35); }
 body.bride-variant .opening__deco--tl { border-top-color: rgba(157,16,36,.7); border-left-color: rgba(157,16,36,.7); }
 body.bride-variant .opening__deco--bl { border-bottom-color: rgba(157,16,36,.7); border-left-color: rgba(157,16,36,.7); }
 body.bride-variant .opening__date-block { border-color: rgba(157,16,36,.62); }
+
 body.bride-variant .calendar {
   right: 24px;
   bottom: 34px;
@@ -1226,4 +1238,106 @@ body.bride-variant .calendar__heart::before { z-index: -1; width: 40px; height: 
     min-height: 38px;
     font-size: 12px;
   }
+}
+
+/* ── Readable date, timeline and countdown numerals ─── */
+.event-card__lunar {
+  font-family: var(--sans);
+  font-size: clamp(12px, 2.8vw, 15px);
+  line-height: 1.5;
+  letter-spacing: .01em;
+}
+.event-card__venue small {
+  font-family: var(--sans);
+  font-size: clamp(12px, 2.9vw, 15px);
+  line-height: 1.5;
+  letter-spacing: .01em;
+}
+.timeline article > b {
+  font-family: var(--sans);
+  font-size: clamp(12px, 2.8vw, 15px);
+  font-weight: 600;
+  letter-spacing: .035em;
+  font-variant-numeric: tabular-nums;
+}
+.countdown-circle b {
+  font-family: var(--sans);
+  font-size: clamp(20px, 4.8vw, 25px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .01em;
+}
+.hero__content strong {
+  font-family: var(--serif);
+  font-size: clamp(16px, 3.8vw, 22px);
+  font-weight: 500;
+  letter-spacing: .12em;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-style: normal;
+}
+.opening__guest {
+  display: inline-block;
+  max-width: 92%;
+  margin-top: 4px;
+  padding: 0 8px;
+  color: #f7e7ba;
+  font-family: var(--serif);
+  font-size: clamp(19px, 4.5vw, 25px);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: .015em;
+  line-height: 1.2;
+  text-shadow: 0 2px 12px rgba(0,0,0,.28);
+}
+body.bride-variant .opening__guest { color: #ffd7dc; }
+.opening__invite,
+.invite__copy p {
+  font-family: var(--serif);
+  font-size: clamp(18px, 4.2vw, 21px);
+  font-weight: 400;
+  letter-spacing: .02em;
+  text-transform: none;
+}
+.invite__copy p { color: #9a8260; }
+.invite__copy strong {
+  min-width: 290px;
+  margin: 14px 0 12px;
+  padding: 0 10px 4px;
+  border-bottom: 1px dashed rgba(154,130,96,.78);
+  color: #856c4c;
+  font-family: var(--serif);
+  font-size: clamp(20px, 4.7vw, 24px);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.invite__copy span {
+  width: min(330px, 100%);
+  color: #9a8260;
+  font-family: var(--serif);
+  font-size: clamp(18px, 4.2vw, 21px);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: .01em;
+  text-transform: none;
+}
+body.bride-variant .invite__copy p,
+body.bride-variant .invite__copy strong,
+body.bride-variant .invite__copy span { color: #87434d; }
+body.bride-variant .invite__copy strong { border-bottom-color: rgba(157,16,36,.55); }
+
+/* ── One consistent typeface for all numerals ───────── */
+.hero__content strong,
+.opening__date-block b,
+.event-card__schedule strong,
+.event-card__date-part span,
+.event-card__date-part b,
+.timeline article > b,
+.timeline article > i,
+.countdown-circle b {
+  font-family: var(--sans) !important;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.opening__date-block b {
+  font-size: clamp(22px, 5.2vw, 34px);
 }
