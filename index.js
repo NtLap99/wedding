@@ -529,18 +529,28 @@ function setupRsvp() {
 
 function setupGiftModal() {
   const groomModal = $('.miu-gift-groom-modal');
-  if (!groomModal) return;
+  const brideModal = $('.miu-gift-bride-modal');
+  if (!groomModal || !brideModal) return;
 
   $$('[data-open-miu-gift-groom]').forEach((button) => button.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
     groomModal.showModal();
   }));
+  $$('[data-open-miu-gift-bride]').forEach((button) => button.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
+    brideModal.showModal();
+  }));
   $$('[data-close-miu-gift-groom]').forEach((button) => button.addEventListener('click', () => groomModal.close()));
+  $$('[data-close-miu-gift-bride]').forEach((button) => button.addEventListener('click', () => brideModal.close()));
 
   groomModal.addEventListener('click', (event) => {
     if (event.target === groomModal) groomModal.close();
   });
+  brideModal.addEventListener('click', (event) => {
+    if (event.target === brideModal) brideModal.close();
+  });
   if (query.get('modal') === 'gift-groom') window.addEventListener('load', () => groomModal.showModal(), { once: true });
+  if (query.get('modal') === 'gift-bride') window.addEventListener('load', () => brideModal.showModal(), { once: true });
 }
 
 function setupGallery() {
