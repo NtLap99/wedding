@@ -2,6 +2,13 @@
 
 Website thiệp cưới tĩnh, tối ưu cho điện thoại và máy tính. Không cần cài thư viện.
 
+## Hai source deploy riêng
+
+- `wedding`: source chính ở thư mục gốc.
+- `wedding-co-dau`: source độc lập cho bản cô dâu, có Firebase data riêng.
+
+Trên Vercel, tạo hai project tương ứng. Project `wedding` dùng thư mục gốc; project `wedding-co-dau` chọn `wedding-co-dau` làm Root Directory và để trống Build Command/Output Directory.
+
 ## Xem website
 
 Chạy trong thư mục dự án:

@@ -1,5 +1,4 @@
-const isBrideVariant = new URLSearchParams(window.location.search).get('bride') === '1';
-const MIU_WEDDING_DATE = new Date(isBrideVariant ? "2026-10-20T11:00:00+07:00" : "2026-10-25T10:00:00+07:00").getTime();
+const MIU_WEDDING_DATE = new Date("2026-10-25T10:00:00+07:00").getTime();
 const MIU_PHOTOS = [
   "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576300/MSO00046.jpg",
   "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576342/MSO00163.jpg",
@@ -59,63 +58,6 @@ function hydrateGuest() {
   $$('[data-guest-input]').forEach((input) => {
     if (guest !== "Quý khách") input.value = guest;
   });
-}
-
-function setupBrideVariant() {
-  if (!isBrideVariant) return;
-
-  document.body.classList.add('bride-variant');
-  document.title = 'Nguyễn Sa | Ngày vu quy';
-  const description = $('meta[name="description"]');
-  if (description) description.content = 'Thiệp cưới Nguyễn Sa · 20.10.2026';
-
-  const setText = (selector, text, context = document) => {
-    const node = $(selector, context);
-    if (node) node.textContent = text;
-  };
-
-  setText('.opening__date-block b', '20');
-  setText('.hero__content strong', '20.10.2026');
-  setText('.countdown__thanks i', 'Nguyễn Sa · 20.10.2026');
-  const openingName = $('.opening__name');
-  if (openingName) openingName.innerHTML = 'Nguyễn Sa<i>&amp;</i>Thanh Lập';
-  const heroNames = $$('.hero__content h1 span');
-  if (heroNames.length >= 2) {
-    heroNames[0].textContent = 'Nguyễn Sa';
-    heroNames[1].textContent = 'Thanh Lập';
-  }
-  const coupleNames = $$('.couple-names h2');
-  if (coupleNames.length >= 2) {
-    coupleNames[0].textContent = 'Nguyễn Sa';
-    coupleNames[1].textContent = 'Thanh Lập';
-  }
-
-  const cards = $$('.event-card');
-  const brideAddress = 'Thôn Bồ Đề, xã Long Phụng, tỉnh Quảng Ngãi';
-  const brideMap = 'https://www.google.com/maps/search/?api=1&query=15.0282338,108.8613387';
-  const setCard = (card, title, time, weekday, day, venue, note) => {
-    setText('.event-card__title', title, card);
-    setText('.event-card__schedule strong', time, card);
-    setText('.event-card__schedule-day', weekday, card);
-    const dateParts = $$('.event-card__date-part b', card);
-    if (dateParts[0]) dateParts[0].textContent = day;
-    if (dateParts[1]) dateParts[1].textContent = '10';
-    if (dateParts[2]) dateParts[2].textContent = '26';
-    card.querySelector('.event-card__date-box')?.setAttribute('aria-label', `Ngày ${day} tháng 10 năm 2026`);
-    setText('.event-card__lunar', note, card);
-    setText('.event-card__venue h3', venue, card);
-    setText('.event-card__venue small', brideAddress, card);
-    const map = $('.map-link', card);
-    if (map) map.href = brideMap;
-  };
-
-  if (cards[0]) setCard(cards[0], 'Tiệc Cưới', '11:00', 'Thứ Ba', '20', 'Tư Gia Nhà Gái', 'Ngày chung vui của chúng mình');
-  if (cards[1]) setCard(cards[1], 'Lễ Gia Tiên', '07:30', 'Thứ Tư', '21', 'Tư Gia Nhà Gái', 'Lễ gia tiên tại tư gia');
-
-  const calendarDays = $$('.calendar__days i');
-  calendarDays.forEach((day) => day.classList.remove('calendar__heart'));
-  const brideDay = calendarDays.find((day) => day.textContent.trim() === '20');
-  if (brideDay) brideDay.classList.add('calendar__heart');
 }
 
 function setupConfetti() {
@@ -518,7 +460,7 @@ function setupCountdown() {
     Object.entries(values).forEach(([key, value]) => {
       const node = $(`[data-count="${key}"]`);
       if (node) {
-        const formatted = String(value).padStart(key === 'days' ? 3 : 2, '0');
+        const formatted = String(value).padStart(2, '0');
         if (node.textContent !== formatted) {
           node.textContent = formatted;
           node.style.transform = 'scale(1.12)';
@@ -587,30 +529,18 @@ function setupRsvp() {
 
 function setupGiftModal() {
   const groomModal = $('.miu-gift-groom-modal');
-  const brideModal = $('.miu-gift-bride-modal');
-  if (!groomModal || !brideModal) return;
+  if (!groomModal) return;
 
   $$('[data-open-miu-gift-groom]').forEach((button) => button.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
     groomModal.showModal();
   }));
-  $$('[data-open-miu-gift-bride]').forEach((button) => button.addEventListener('click', () => {
-    document.dispatchEvent(new CustomEvent('miu:pause-auto-scroll'));
-    brideModal.showModal();
-  }));
-
   $$('[data-close-miu-gift-groom]').forEach((button) => button.addEventListener('click', () => groomModal.close()));
-  $$('[data-close-miu-gift-bride]').forEach((button) => button.addEventListener('click', () => brideModal.close()));
 
   groomModal.addEventListener('click', (event) => {
     if (event.target === groomModal) groomModal.close();
   });
-  brideModal.addEventListener('click', (event) => {
-    if (event.target === brideModal) brideModal.close();
-  });
-
   if (query.get('modal') === 'gift-groom') window.addEventListener('load', () => groomModal.showModal(), { once: true });
-  if (query.get('modal') === 'gift-bride') window.addEventListener('load', () => brideModal.showModal(), { once: true });
 }
 
 function setupGallery() {
@@ -791,7 +721,6 @@ function setupTouchSparkles() {
   window.addEventListener('touchmove', handleMove, { passive: true });
 }
 
-setupBrideVariant();
 hydrateGuest();
 setupConfetti();
 setupOpening();
