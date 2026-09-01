@@ -15,6 +15,7 @@ const firebaseConfig = {
 
 let db = null;
 let isFirebaseActive = false;
+const APP_ID = 'wedding-web';
 
 try {
   if (typeof firebase !== 'undefined') {
@@ -36,6 +37,7 @@ const WeddingDB = {
   async saveRsvp(data) {
     const payload = {
       ...data,
+      appId: APP_ID,
       submittedAt: new Date().toISOString(),
       createdAt: typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
     };
@@ -60,6 +62,7 @@ const WeddingDB = {
     const payload = {
       name,
       message,
+      appId: APP_ID,
       date: timeString,
       createdAt: typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
     };

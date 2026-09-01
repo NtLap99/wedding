@@ -7,6 +7,8 @@ Website thiệp cưới tĩnh, tối ưu cho điện thoại và máy tính. Kh�
 - `wedding`: source chính ở thư mục gốc.
 - `wedding-co-dau`: source độc lập cho bản cô dâu, có Firebase data riêng.
 
+Firebase của bản chính (`wedding-web`) dùng `wishes` và `rsvps`; bản cô dâu (`wedding-web-sa`) dùng `wishes-sa` và `rsvps-sa`, nên dữ liệu hai thiệp không bị trộn.
+
 Trên Vercel, tạo hai project tương ứng. Project `wedding` dùng thư mục gốc; project `wedding-co-dau` chọn `wedding-co-dau` làm Root Directory và để trống Build Command/Output Directory.
 
 ## Xem website
