@@ -90,6 +90,7 @@ const WeddingDB = {
             const wishes = [];
             snapshot.forEach((doc) => {
               const data = doc.data();
+              if (data.appId !== APP_ID) return;
               wishes.push({
                 id: doc.id,
                 name: data.name || "Khách mời",
