@@ -18,7 +18,7 @@ const MIU_PHOTOS = [
   "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576313/MSO00248.jpg",
   "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576305/MSO09786.jpg",
   "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576305/MSO00142.jpg",
-  "https://res.cloudinary.com/vltl1tcn/image/upload/v1787576342/MSO09519.jpg",
+  "https://res.cloudinary.com/vltl1tcn/image/upload/v1789569451/MSO09519-8-10MB.jpg",
 ];
 
 const $ = (selector, context = document) => context.querySelector(selector);
